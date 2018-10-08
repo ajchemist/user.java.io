@@ -120,6 +120,11 @@
 ;; ** predicates
 
 
+(defn ^Boolean exists?
+  [x]
+  (Files/exists (path x) *no-follow*))
+
+
 (defn ^Boolean file?
   [x]
   (Files/isRegularFile (path x) *no-follow*))
@@ -191,16 +196,27 @@
 
 (defn copy!
   ([src dst]
-   (copy! src dst #{:atomic :replace} nil))
-  ([src dst flags]
-   (copy! src dst flags nil))
-  ([src dst flags {:keys [^FileTime time ^java.util.Set mode]}]
+   (copy! src dst nil))
+  ([src dst attrs]
+   (copy! src dst attrs #{:atomic :replace}))
+  ([src dst {:keys [^FileTime time ^java.util.Set mode]} flags]
    (let [src  (path src)
          dst  (path dst)
          opts (interpret-copy-opts flags)]
      (Files/copy src dst opts)
      (when time (Files/setLastModifiedTime dst time))
      (when mode (Files/setPosixFilePermissions dst mode)))))
+
+
+(defn write!
+  ([target writer-fn]
+   (write! target writer-fn #{:create}))
+  ([target writer-fn flags]
+   (let [^Path target (doto (path target) (mkparents))
+         opts         (interpret-open-opts flags)]
+     (with-open [os (Files/newOutputStream target opts)]
+       (writer-fn os)))))
+
 
 
 (defn resource-ext-forms
