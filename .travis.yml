@@ -1,0 +1,23 @@
+language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8
+install:
+  - curl -LO https://download.clojure.org/install/linux-install-1.9.0.394.sh
+  - chmod +x linux-install-1.9.0.394.sh
+  - sudo ./linux-install-1.9.0.394.sh
+  - export PATH=/usr/local/bin:$PATH
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gitlibs
+env:
+  matrix:
+    - DEPOPT="-R:1.8 -A:test"
+    - DEPOPT="-R:1.9 -A:test"
+    - DEPOPT="-R:1.10 -A:test"
+script:
+  - which gpg
+  - which mvn
+  - clojure $DEPOPT -Sdescribe
