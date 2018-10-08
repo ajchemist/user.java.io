@@ -83,16 +83,16 @@
 (defn- interpret-open-opt
   [opt]
   (case opt
-    :append            StandardOpenOption/APPEND
-    :create            StandardOpenOption/CREATE
-    :create-new        StandardOpenOption/CREATE_NEW
-    :delete-on-close   StandardOpenOption/DELETE_ON_CLOSE
-    :dsync             StandardOpenOption/DSYNC
-    :read              StandardOpenOption/READ
-    :sparse            StandardOpenOption/SPARSE
-    :sync              StandardOpenOption/SYNC
-    :truncate-existing StandardOpenOption/TRUNCATE_EXISTING
-    :write             StandardOpenOption/WRITE
+    :append     StandardOpenOption/APPEND
+    :create     StandardOpenOption/CREATE
+    :create-new StandardOpenOption/CREATE_NEW
+    :delete     StandardOpenOption/DELETE_ON_CLOSE
+    :dsync      StandardOpenOption/DSYNC
+    :read       StandardOpenOption/READ
+    :sparse     StandardOpenOption/SPARSE
+    :sync       StandardOpenOption/SYNC
+    :truncate   StandardOpenOption/TRUNCATE_EXISTING
+    :write      StandardOpenOption/WRITE
     (throw (IllegalArgumentException. (str "Illegal open option: " opt)))))
 
 
@@ -198,7 +198,7 @@
   ([src dst]
    (copy! src dst nil))
   ([src dst attrs]
-   (copy! src dst attrs #{:atomic :replace}))
+   (copy! src dst attrs #{:replace}))
   ([src dst {:keys [^FileTime time ^java.util.Set mode]} flags]
    (let [src  (path src)
          dst  (path dst)
