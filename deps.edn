@@ -15,4 +15,9 @@
     org.clojure/clojure {:mvn/version "1.10.0-beta1"}
     }}
   :test
-  {:extra-paths ["test"]}}}
+  {:extra-paths ["test"]
+   :extra-deps
+   {
+    badigeon/badigeon         {:git/url "git@github.com:aJchemist/badigeon.git" :sha "1911d5352d2315b4d976b1ab0f26d8a071c39afc"}
+    com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git" :sha "028a6d41ac9ac5d5c405dfc38e4da6b4cc1255d5"}
+    }}}}
