@@ -1,23 +1,57 @@
 language: java
+
+
 jdk:
   - oraclejdk8
-  - oraclejdk9
+  - oraclejdk11
   - openjdk8
+
+
+env:
+  matrix:
+    - TESTOPT="-R:1.8 -A:test"
+    - TESTOPT="-R:1.9 -A:test"
+    - TESTOPT="-R:1.10 -A:test"
+
+
 install:
   - curl -LO https://download.clojure.org/install/linux-install-1.9.0.394.sh
   - chmod +x linux-install-1.9.0.394.sh
   - sudo ./linux-install-1.9.0.394.sh
   - export PATH=/usr/local/bin:$PATH
+  - which gpg
+  - which mvn
+  - cp .ci/settings.xml $HOME/.m2/
+
+
 cache:
   directories:
     - $HOME/.m2
     - $HOME/.gitlibs
-env:
-  matrix:
-    - DEPOPT="-R:1.8 -A:test"
-    - DEPOPT="-R:1.9 -A:test"
-    - DEPOPT="-R:1.10 -A:test"
-script:
-  - which gpg
-  - which mvn
-  - clojure $DEPOPT -Sdescribe
+
+
+script: clojure $TESTOPT -m cognitect.test-runner
+
+
+jobs:
+  include:
+    - stage: package
+      jdk: openjdk8
+      env: TESTOPT=""
+      script: clojure -R:1.9 -A:test -m script.package
+      before_deploy:
+        - git config --local user.name "aJchemist"
+        - git config --local user.email "valchemist@me.com"
+        - eval $(ssh-agent -s)
+        - ssh-add <(openssl aes-256-cbc -K $encrypted_7dcb07812730_key -iv $encrypted_7dcb07812730_iv -in .ci/sshkey.enc -d)
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - ssh-keyscan github.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+      deploy:
+        provider: script
+        skip_cleanup: true
+        on:
+          branch: master
+        script:
+            - mvn deploy:deploy-file -Dclojars.username="$CLOJARS_USERNAME" -Dclojars.password="$CLOJARS_PASSWORD" -DpomFile="pom.xml" -Dfile="target/package.jar" -Dpackaging=jar -DrepositoryId="clojars" -Durl="https://clojars.org/repo"

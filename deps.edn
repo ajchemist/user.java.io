@@ -18,6 +18,6 @@
   {:extra-paths ["test"]
    :extra-deps
    {
-    badigeon/badigeon         {:git/url "git@github.com:aJchemist/badigeon.git" :sha "1911d5352d2315b4d976b1ab0f26d8a071c39afc"}
+    badigeon/badigeon         {:git/url "https://github.com/aJchemist/badigeon.git" :sha "58026149fd3272460b09d1251275626a588f837a"}
     com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git" :sha "028a6d41ac9ac5d5c405dfc38e4da6b4cc1255d5"}
     }}}}
