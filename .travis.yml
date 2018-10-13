@@ -43,14 +43,15 @@ jobs:
         - git config --local user.name "aJchemist"
         - git config --local user.email "valchemist@me.com"
         - eval $(ssh-agent -s)
-        - ssh-add <(openssl aes-256-cbc -K $encrypted_7dcb07812730_key -iv $encrypted_7dcb07812730_iv -in .ci/sshkey.enc -d)
+        - ssh-add <(openssl aes-256-cbc -K $encrypted_7dcb07812730_key -iv $encrypted_7dcb07812730_iv -in .ci/deploy_key.enc -d)
         - mkdir -p ~/.ssh
         - chmod 700 ~/.ssh
         - ssh-keyscan github.com >> ~/.ssh/known_hosts
         - chmod 644 ~/.ssh/known_hosts
         - git add -u -- pom.xml
         - git commit -m "$(clojure -R:1.9 -A:test -m script.extra -- get-version) [ci skip]"
-        - git push origin master
+        - git remote add origin-ssh "git@github.com:aJchemist/user.java.io.git"
+        - git push -v -u origin-ssh master:refs/heads/master
       deploy:
         provider: script
         skip_cleanup: true
