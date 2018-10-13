@@ -21,4 +21,7 @@
   <build>
     <sourceDirectory>src</sourceDirectory>
   </build>
+  <scm>
+    <url>https://github.com/aJchemist/user.java.io</url>
+  </scm>
 </project>
