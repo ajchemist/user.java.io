@@ -58,3 +58,11 @@ jobs:
           branch: master
           jdk: openjdk8
         script: mvn deploy:deploy-file -Dclojars.username="$CLOJARS_USERNAME" -Dclojars.password="$CLOJARS_PASSWORD" -DpomFile="pom.xml" -Dfile="target/package.jar" -Dpackaging=jar -DrepositoryId="clojars" -Durl="https://clojars.org/repo"
+
+
+notifications:
+  slack:
+    rooms:
+      - secure: "iHB3YuCGrTjoIMD6QvZOOqsOFHtLOzMolZ5YBGSnzPJr+ySaxKjYaEHtD4OeDfqJixCFJWLCAxgnEYrlnst2SX+QYSVgGR0M/xgE75UwLum+V+wtAekv9QdaWQdFQeoUT21zmsW0eN2tx9x5V8A8Jo0+XEutZUHIyKnaT5+F6A06W5vHfy0ToctT6ubPZJ660NPaIgld9scpmjKN6pHr9WM2fruwlMDOtWp8H7X1XfQv45bgkJaum4WGmhtyK+w22GEs4XMS6WyqDQ53DolEtLfwanhtsPLrLBXvuV+5DZHUIf1/1N+/IuuwxahXFoHYrVCPaRU69P9Qt7+1Xjpl6y85rU7ft3tFAmO3/8vJ/yLQGVaHSIAlMjnYjacw2Du4cvN8OF5rw2D3CLyiX5jZc+WtxqxL++dqD5xSKOnqne5L5/VEO/i0t7leE4KuYSxHMPxp5zih7EqGHHml6lJXl/JSPw+M4RpDaCifXuGrFFUQAvvuSWJWF7rAuUoRCM126hQayrRo5LRvG0+JuSv2F7IYIzm7culYVkJydKqpqZ+b4E/8pjDebf1lDihUXo0qJVEyiDlPGTTc5zQnpXJZXn0Hn7G/VyvP9R7zsy6ATdYTRg2C7ugTQZkm86FV06IWKcy8vUFLcZcdLY/FMKEWDZ9OI2or3qZnuzGf27AaDhg="
+    on_success: always
+    on_failure: always
