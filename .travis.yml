@@ -39,7 +39,7 @@ jobs:
       jdk: openjdk8
       env: TESTOPT=""
       script: clojure -R:1.9 -A:test -m script.package
-      before_deploy:
+      after_success:
         - git config --local user.name "aJchemist"
         - git config --local user.email "valchemist@me.com"
         - eval $(ssh-agent -s)
@@ -48,10 +48,13 @@ jobs:
         - chmod 700 ~/.ssh
         - ssh-keyscan github.com >> ~/.ssh/known_hosts
         - chmod 644 ~/.ssh/known_hosts
+        - git add -u -- pom.xml
+        - git commit -m "$(clojure -R:1.9 -A:test -m script.extra -- get-version) [ci skip]"
+        - git push origin master
       deploy:
         provider: script
         skip_cleanup: true
         on:
           branch: master
-        script:
-            - mvn deploy:deploy-file -Dclojars.username="$CLOJARS_USERNAME" -Dclojars.password="$CLOJARS_PASSWORD" -DpomFile="pom.xml" -Dfile="target/package.jar" -Dpackaging=jar -DrepositoryId="clojars" -Durl="https://clojars.org/repo"
+          jdk: openjdk8
+        script: mvn deploy:deploy-file -Dclojars.username="$CLOJARS_USERNAME" -Dclojars.password="$CLOJARS_PASSWORD" -DpomFile="pom.xml" -Dfile="target/package.jar" -Dpackaging=jar -DrepositoryId="clojars" -Durl="https://clojars.org/repo"
