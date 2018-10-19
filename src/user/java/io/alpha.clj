@@ -5,6 +5,8 @@
    )
   (:import
    java.io.File
+   java.io.InputStream
+   java.io.OutputStream
    java.net.URI
    java.net.URL
    java.nio.file.CopyOption
@@ -209,15 +211,25 @@
 
 
 (defn copy!
+  "
+  - [src, dst] = [InputStream, Path]
+  - [src, dst] = [Path, OutputStream]
+  - [src, dst] = [Path, Path]
+  "
   ([src dst]
-   (copy! src dst nil))
+   (cond
+     (instance? OutputStream dst) (Files/copy src dst)
+     :else                        (copy! src dst nil)))
   ([src dst attrs]
    (copy! src dst attrs #{:replace}))
   ([src dst {:keys [^FileTime time ^java.util.Set mode]} flags]
-   (let [src  (as-path src)
-         dst  (as-path dst)
-         opts (interpret-copy-opts flags)]
-     (Files/copy src dst opts)
+   (let [dst (as-path dst)]
+     (cond
+       (instance? InputStream src)
+       (Files/copy ^InputStream src dst (interpret-copy-opts flags) )
+
+       :else
+       (Files/copy (as-path src) dst (interpret-copy-opts flags)))
      (when time (Files/setLastModifiedTime dst time))
      (when mode (Files/setPosixFilePermissions dst mode)))))
 
