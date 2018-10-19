@@ -51,18 +51,12 @@
   (^java.net.URI to-uri [x]))
 
 
-(def default-uri-utils-interface-impl
-  {:to-url (fn [x] (throw (IllegalArgumentException. (str "Cannot coerce <" (pr-str x) "> to URI"))))})
-
-
 (defprotocol UrlUtils
-  (^java.net.URL to-url [x])
   (^String to-external-form [url]))
 
 
 (def default-url-utils-interface-impl
-  {:to-url           (fn [x] (throw (IllegalArgumentException. (str "Cannot coerce <" (pr-str x) "> to URL"))))
-   :to-external-form (fn [x] (to-external-form (to-url x)))})
+  {:to-external-form (fn [x] (to-external-form (jio/as-url x)))})
 
 
 ;; * nio.files
@@ -407,8 +401,7 @@
   {:to-uri (fn [^File x] (. x toURI))}
 
   UrlUtils
-  {:to-url           (fn [^File x] (.. x toURI toURL))
-   :to-external-form (fn [^File x] (.. x toURI toURL toExternalForm))})
+  {:to-external-form (fn [^File x] (.. x toURI toURL toExternalForm))})
 
 
 (extend-type java.net.URI
@@ -419,7 +412,6 @@
   (to-uri [x] x)
 
   UrlUtils
-  (to-url [x] (. x toURL))
   (to-external-form [x] (.. x toURL toExternalForm)))
 
 
@@ -434,7 +426,6 @@
   (to-uri [this] (. this toURI))
 
   UrlUtils
-  (to-url [x] x)
   (to-external-form [x] (. x toExternalForm)))
 
 
