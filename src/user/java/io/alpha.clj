@@ -42,13 +42,13 @@
   (^String filename [this])
   (^String filepath [this])
   (^String parent [this])
-  (^File parent-file [this])
+  (^java.io.File parent-file [this])
   (^String basename [this])
   (^String extension [this]))
 
 
 (defprotocol UriUtils
-  (^URI to-uri [x]))
+  (^java.net.URI to-uri [x]))
 
 
 (def default-uri-utils-interface-impl
@@ -56,7 +56,7 @@
 
 
 (defprotocol UrlUtils
-  (^URL to-url [x])
+  (^java.net.URL to-url [x])
   (^String to-external-form [url]))
 
 
@@ -120,22 +120,26 @@
 ;; ** predicates
 
 
-(defn ^Boolean exists?
+(defn exists?
+  ^Boolean
   [x]
   (Files/exists (path x) *no-follow*))
 
 
-(defn ^Boolean file?
+(defn file?
+  ^Boolean
   [x]
   (Files/isRegularFile (path x) *no-follow*))
 
 
-(defn ^Boolean directory?
+(defn directory?
+  ^Boolean
   [x]
   (Files/isDirectory (path x) *no-follow*))
 
 
 (defn same-directory?
+  ^Boolean
   [path1 path2]
   (let [normalized-path1 (.. (path path1) toAbsolutePath normalize)
         normalized-path2 (.. (path path2) toAbsolutePath normalize)]
@@ -144,6 +148,7 @@
 
 (defn parent-path?
   "Return true if `path1` is an ancestor path of `path2`"
+  ^Boolean
   [path1 path2]
   (let [normalized-path1 (.. (path path1) toAbsolutePath normalize)
         normalized-path2 (.. (path path2) toAbsolutePath normalize)]
@@ -155,18 +160,21 @@
 ;; ** operations
 
 
-(defn ^Path mkdir
+(defn mkdir
+  ^Path
   [dirpath]
   (Files/createDirectories (path dirpath) (make-array FileAttribute 0)))
 
 
-(defn ^Path mkparents
+(defn mkparents
+  ^Path
   [target]
   (when-let [parent (.getParent (path target))]
     (mkdir parent)))
 
 
 (defn mktempdir
+  ^Path
   ([^String prefix]
    (Files/createTempDirectory prefix (make-array FileAttribute 0)))
   ([^String dir ^String prefix]
@@ -252,7 +260,6 @@
 
 (defn dirwalk-1
   "return lazy sequence"
-  {:style/indent [:defn]}
   [dirpath pattern]
   (->> dirpath
     jio/file .listFiles seq
@@ -261,7 +268,6 @@
 
 (defn dirwalk
   "return lazy sequence"
-  {:style/indent [:defn]}
   [dirpath pattern]
   (->> dirpath
     jio/file file-seq
@@ -291,12 +297,14 @@
 ;; ** file
 
 
-(defn ^String file-basename
+(defn file-basename
+  ^String
   [^File file]
   (get-basename (. file getName)))
 
 
-(defn ^String file-extension
+(defn file-extension
+  ^String
   [^File file]
   (get-extension (. file getName)))
 
