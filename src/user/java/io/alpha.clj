@@ -71,6 +71,12 @@
 ;; ** resolution
 
 
+(defn path-resolve
+  ^Path
+  [^Path a b]
+  (. a resolve (str b)))
+
+
 ;; ** options
 
 
@@ -217,14 +223,41 @@
 
 
 (defn write!
-  ([target writer-fn]
-   (write! target writer-fn #{:create}))
-  ([target writer-fn flags]
+  ([target write-fn]
+   (write! target write-fn #{:create}))
+  ([target write-fn flags]
    (let [^Path target (doto (path target) (mkparents))
          opts         (interpret-open-opts flags)]
      (with-open [os (Files/newOutputStream target opts)]
-       (writer-fn os)))))
+       (write-fn os)))))
 
+
+;; ** batch operation
+
+
+(defn- do-copy-operation
+  [^Path dest-dir {:keys [src path] :as operation}]
+  (copy! (path src) (doto (path-resolve dest-dir path) (mkparents)) (select-keys operation [:time :mode])))
+
+
+(defn- do-write-operation
+  [^Path dest-dir {:keys [path write-fn] :as operation}]
+  (write! (doto (path-resolve dest-dir path) (mkparents)) write-fn))
+
+
+(defn do-operations
+  [^Path dest-dir operations]
+  (doseq [operation operations]
+    (try
+      (case (:op operation)
+        (:copy :copy!)   (do-copy-operation dest-dir operation)
+        (:write :write!) (do-write-operation dest-dir operation)
+        (throw (UnsupportedOperationException. (pr-str operation))))
+      (catch Throwable e
+        (throw (ex-info "Operation failed:" {:operation operation :exception e}))))))
+
+
+;;
 
 
 (defn resource-ext-forms
