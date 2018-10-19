@@ -35,7 +35,7 @@
 
 
 (defprotocol IPath
-  (^java.nio.file.Path path [x]))
+  (^java.nio.file.Path as-path [x]))
 
 
 (defprotocol FilenameUtils
@@ -60,6 +60,12 @@
 
 
 ;; * nio.files
+
+
+;;
+
+
+(defn path ^Path [x] (as-path x))
 
 
 ;; ** resolution
@@ -123,26 +129,26 @@
 (defn exists?
   ^Boolean
   [x]
-  (Files/exists (path x) *no-follow*))
+  (Files/exists (as-path x) *no-follow*))
 
 
 (defn file?
   ^Boolean
   [x]
-  (Files/isRegularFile (path x) *no-follow*))
+  (Files/isRegularFile (as-path x) *no-follow*))
 
 
 (defn directory?
   ^Boolean
   [x]
-  (Files/isDirectory (path x) *no-follow*))
+  (Files/isDirectory (as-path x) *no-follow*))
 
 
 (defn same-directory?
   ^Boolean
   [path1 path2]
-  (let [normalized-path1 (.. (path path1) toAbsolutePath normalize)
-        normalized-path2 (.. (path path2) toAbsolutePath normalize)]
+  (let [normalized-path1 (.. (as-path path1) toAbsolutePath normalize)
+        normalized-path2 (.. (as-path path2) toAbsolutePath normalize)]
     (.equals normalized-path2 normalized-path1)))
 
 
@@ -150,8 +156,8 @@
   "Return true if `path1` is an ancestor path of `path2`"
   ^Boolean
   [path1 path2]
-  (let [normalized-path1 (.. (path path1) toAbsolutePath normalize)
-        normalized-path2 (.. (path path2) toAbsolutePath normalize)]
+  (let [normalized-path1 (.. (as-path path1) toAbsolutePath normalize)
+        normalized-path2 (.. (as-path path2) toAbsolutePath normalize)]
     (and
       (not (.equals normalized-path2 normalized-path1))
       (.startsWith normalized-path2 normalized-path1))))
@@ -163,13 +169,13 @@
 (defn mkdir
   ^Path
   [dirpath]
-  (Files/createDirectories (path dirpath) (make-array FileAttribute 0)))
+  (Files/createDirectories (as-path dirpath) (make-array FileAttribute 0)))
 
 
 (defn mkparents
   ^Path
   [target]
-  (when-let [parent (.getParent (path target))]
+  (when-let [parent (.getParent (as-path target))]
     (mkdir parent)))
 
 
@@ -178,7 +184,7 @@
   ([^String prefix]
    (Files/createTempDirectory prefix (make-array FileAttribute 0)))
   ([^String dir ^String prefix]
-   (Files/createTempDirectory (mkdir (path dir)) prefix (make-array FileAttribute 0))))
+   (Files/createTempDirectory (mkdir (as-path dir)) prefix (make-array FileAttribute 0))))
 
 
 (defn move!
@@ -199,7 +205,7 @@
    (move! src dst #{:atomic :replace}))
   ([src dst flags]
    (let [opts (interpret-copy-opts flags)]
-     (Files/move (path src) (path dst) opts))))
+     (Files/move (as-path src) (as-path dst) opts))))
 
 
 (defn copy!
@@ -208,8 +214,8 @@
   ([src dst attrs]
    (copy! src dst attrs #{:replace}))
   ([src dst {:keys [^FileTime time ^java.util.Set mode]} flags]
-   (let [src  (path src)
-         dst  (path dst)
+   (let [src  (as-path src)
+         dst  (as-path dst)
          opts (interpret-copy-opts flags)]
      (Files/copy src dst opts)
      (when time (Files/setLastModifiedTime dst time))
@@ -220,8 +226,8 @@
   ([target write-fn]
    (write! target write-fn #{:create}))
   ([target write-fn flags]
-   (let [^Path target (doto (path target) (mkparents))
-         opts         (interpret-open-opts flags)]
+   (let [target (doto (as-path target) (mkparents))
+         opts   (interpret-open-opts flags)]
      (with-open [os (Files/newOutputStream target opts)]
        (write-fn os)))))
 
@@ -231,7 +237,7 @@
 
 (defn- do-copy-operation
   [^Path dest-dir {:keys [src path] :as operation}]
-  (copy! (path src) (doto (path-resolve dest-dir path) (mkparents)) (select-keys operation [:time :mode])))
+  (copy! (as-path src) (doto (path-resolve dest-dir path) (mkparents)) (select-keys operation [:time :mode])))
 
 
 (defn- do-write-operation
@@ -360,7 +366,7 @@
 
 (extend-type Path
   IPath
-  (path [x] x)
+  (as-path [x] x)
 
 
   jio/Coercions
@@ -369,12 +375,12 @@
 
 (extend-type FileSystem
   IPath
-  (path [x] (first (.getRootDirectories x))))
+  (as-path [x] (first (.getRootDirectories x))))
 
 
 (extend-type String
   IPath
-  (path [x] (Paths/get x (make-array String 0)))
+  (as-path [x] (Paths/get x (make-array String 0)))
 
   FilenameUtils
   (filename [this] (.getName (jio/file this)))
@@ -387,7 +393,7 @@
 
 (extend java.io.File
   IPath
-  {:path (fn [^File x] (.toPath x))}
+  {:as-path (fn [^File x] (.toPath x))}
 
   FilenameUtils
   {:filename    (fn [^File x] (.getName x))
@@ -406,7 +412,7 @@
 
 (extend-type java.net.URI
   IPath
-  (path [x] (Paths/get x))
+  (as-path [x] (Paths/get x))
 
   UriUtils
   (to-uri [x] x)
