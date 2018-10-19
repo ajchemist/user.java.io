@@ -9,16 +9,17 @@
 (deftest main
 
 
-  (is
-    (identical?
-      :test
-      (let [dest-dir (mktempdir "test")]
-        (do-operations
-          dest-dir
-          [{:op       :write
-            :path     "testfile"
-            :write-fn (fn [os] (jio/copy (jio/input-stream (.getBytes (pr-str :test))) os))}])
-        (read-string (slurp (jio/file dest-dir "testfile"))))))
+  (let [dest-dir (mktempdir "test")]
+    (do-operations
+      dest-dir
+      [{:op       :write
+        :path     "testfile"
+        :write-fn (fn [os] (jio/copy (jio/input-stream (.getBytes (pr-str :test))) os))}
+       {:op       :copy
+        :src      "deps.edn"
+        :path     "deps.edn"}])
+    (is (identical? :test (read-string (slurp (jio/file dest-dir "testfile")))))
+    (is (file? (path-resolve dest-dir "deps.edn"))))
 
 
   )
