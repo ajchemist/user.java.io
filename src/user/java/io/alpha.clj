@@ -23,10 +23,12 @@
    java.nio.file.SimpleFileVisitor
    java.nio.file.StandardCopyOption
    java.nio.file.StandardOpenOption
+   java.nio.file.attribute.BasicFileAttributes
    java.nio.file.attribute.FileAttribute
    java.nio.file.attribute.FileTime
    java.nio.file.attribute.PosixFilePermission
    java.nio.file.attribute.PosixFilePermissions
+   java.util.EnumSet
    ))
 
 
@@ -269,54 +271,100 @@
         (throw (ex-info "Operation failed:" {:operation operation :exception e}))))))
 
 
+;; * file tree
+
+
 ;;
-
-
-(defn resource-ext-forms
-  {:deprecated true}
-  ([paths]
-   (resource-ext-forms [] paths))
-  ([coll paths]
-   (into coll
-     (comp
-      (filter string?)
-      (map jio/resource)
-      (filter some?)
-      (map (fn [^URL url] (. url toExternalForm))))
-     paths)))
-
-
-(defn file-ext-forms
-  {:deprecated true}
-  ([paths]
-   (file-ext-forms [] paths))
-  ([coll paths]
-   (into coll
-     (comp
-      (filter string?)
-      (map jio/file)
-      (filter
-       (fn [^File file] (. file isFile)))
-      (map
-       (fn [^File file]
-         (.. file toURI toURL toExternalForm))))
-     paths)))
 
 
 (defn dirwalk-1
   "return lazy sequence"
-  [dirpath pattern]
+  [dirpath re]
   (->> dirpath
     jio/file .listFiles seq
-    (filter #(re-matches pattern (memfn ^File getName)))))
+    (filter #(re-matches re (memfn ^File getName)))))
 
 
 (defn dirwalk
   "return lazy sequence"
-  [dirpath pattern]
+  [dirpath re]
   (->> dirpath
     jio/file file-seq
-    (filter #(re-matches pattern (memfn ^File getName)))))
+    (filter #(re-matches re (memfn ^File getName)))))
+
+
+;; ** file visitor
+
+
+(defrecord visitFileType [^Path path ^BasicFileAttributes attrs]
+  clojure.lang.Indexed
+  (nth [this i] (case i 0 path 1 attrs (throw (IndexOutOfBoundsException.))))
+  (nth [this i not-found] (case i 0 path 1 attrs not-found))
+  )
+
+
+(defn make-file-visitor
+  [visit-file]
+  (reify FileVisitor
+    (postVisitDirectory [_ dir exception] (when exception (.printStackTrace exception)) FileVisitResult/CONTINUE)
+    (preVisitDirectory [_ dir attrs] FileVisitResult/CONTINUE)
+    (visitFile [_ path attrs]
+      (visit-file (->visitFileType path attrs))
+      FileVisitResult/CONTINUE)
+    (visitFileFailed [_ file exception]
+      (case (.getName ^Class exception)
+        "java.nio.file.FileSystemLoopException" FileVisitResult/SKIP_SUBTREE
+        "java.nio.file.NoSuchFileException"     FileVisitResult/SKIP_SUBTREE
+        (throw exception)))))
+
+
+(defn transduce-file-tree-1
+  ([xform rf path]
+   (transduce-file-tree-1 xform rf (rf) path))
+  ([xform rf *pointer path]
+   (let [f (xform rf)]
+     (Files/walkFileTree
+       (as-path path)
+       (EnumSet/of FileVisitOption/FOLLOW_LINKS)
+       Integer/MAX_VALUE
+       (make-file-visitor #(f *pointer %)))
+     (rf *pointer))))
+
+
+(defn transduce-file-tree
+  ([xform rf path]
+   (transduce-file-tree xform rf (rf) path))
+  ([xform rf init path]
+   (transduce-file-tree-1
+     xform
+     (fn
+       ([tcoll] (rf (persistent! tcoll)))
+       ([tcoll x] (rf tcoll x)))
+     (transient init)
+     path)))
+
+
+;; ** fundamental operations for file-tree
+
+
+(defn paths-copy-operations
+  [paths]
+  (let [tcoll (transient [])]
+    (doseq [path paths]
+      (when (directory? path)
+        (transduce-file-tree-1
+          (map
+            (fn [[^Path path' ^BasicFileAttributes attrs]]
+              {:op   :copy
+               :src  path'
+               :path (.relativize (as-path path) path')
+               :time (. attrs lastModifiedTime)}))
+          (fn
+            ([_])
+            ([tcoll op] (conj! tcoll op)))
+          tcoll
+          path)))
+    (persistent! tcoll)))
 
 
 ;; * filename utils internal
