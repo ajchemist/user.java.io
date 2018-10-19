@@ -368,9 +368,9 @@
   IPath
   (as-path [x] x)
 
-
   jio/Coercions
-  (as-file [x] (. x toFile)))
+  (as-file [x] (. x toFile))
+  (as-url [x] (.. x toUri toURL)))
 
 
 (extend-type FileSystem
