@@ -35,7 +35,7 @@
 
 
 (defprotocol IPath
-  (^Path path [x]))
+  (^java.nio.file.Path path [x]))
 
 
 (defprotocol FilenameUtils
@@ -366,7 +366,11 @@
 
 (extend-type Path
   IPath
-  (path [x] x))
+  (path [x] x)
+
+
+  jio/Coercions
+  (as-file [x] (. x toFile)))
 
 
 (extend-type FileSystem
