@@ -360,13 +360,12 @@
 (defn paths-copy-operations
   ([paths]
    (paths-copy-operations identity paths))
-  ([xform paths]
+  ([wrap-xform paths]
    (let [tcoll (transient [])]
      (doseq [path paths]
        (when (directory? path)
          (transduce-file-tree-1
-           (comp
-             xform
+           (wrap-xform
              (map
                (fn [[^Path path' ^BasicFileAttributes attrs]]
                  {:op   :copy
