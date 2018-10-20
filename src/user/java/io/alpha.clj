@@ -249,9 +249,19 @@
 ;; ** batch operation
 
 
+(defn- input-stream-or-as-path
+  [x]
+  (if (instance? InputStream x)
+    x
+    (as-path x)))
+
+
 (defn- do-copy-operation
   [^Path dest-dir {:keys [src path] :as operation}]
-  (copy! (as-path src) (doto (path-resolve dest-dir path) (mkparents)) (select-keys operation [:time :mode])))
+  (copy!
+    (input-stream-or-as-path src)
+    (doto (path-resolve dest-dir path) (mkparents))
+    (select-keys operation [:time :mode])))
 
 
 (defn- do-write-operation
