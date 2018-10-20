@@ -15,9 +15,9 @@ env:
 
 
 install:
-  - curl -LO https://download.clojure.org/install/linux-install-1.9.0.394.sh
-  - chmod +x linux-install-1.9.0.394.sh
-  - sudo ./linux-install-1.9.0.394.sh
+  - curl -LO https://download.clojure.org/install/linux-install-1.9.0.397.sh
+  - chmod +x linux-install-1.9.0.397.sh
+  - sudo ./linux-install-1.9.0.397.sh
   - export PATH=/usr/local/bin:$PATH
   - which gpg
   - which mvn
@@ -40,7 +40,7 @@ jobs:
       env: TESTOPT=""
       script: clojure -R:1.9 -A:test -m script.package
       before_cache:
-        - mvn dependency:get -Dartifact=org.apache.maven.plugins:maven-deploy-plugin:2.7
+        - mvn dependency:get -Dartifact=org.apache.maven.plugins:maven-deploy-plugin:2.8
       after_success:
         - git config --local user.name "aJchemist"
         - git config --local user.email "valchemist@me.com"
