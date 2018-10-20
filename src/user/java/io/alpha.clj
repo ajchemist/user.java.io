@@ -348,23 +348,27 @@
 
 
 (defn paths-copy-operations
-  [paths]
-  (let [tcoll (transient [])]
-    (doseq [path paths]
-      (when (directory? path)
-        (transduce-file-tree-1
-          (map
-            (fn [[^Path path' ^BasicFileAttributes attrs]]
-              {:op   :copy
-               :src  path'
-               :path (.relativize (as-path path) path')
-               :time (. attrs lastModifiedTime)}))
-          (fn
-            ([_])
-            ([tcoll op] (conj! tcoll op)))
-          tcoll
-          path)))
-    (persistent! tcoll)))
+  ([paths]
+   (paths-copy-operations identity paths))
+  ([xform paths]
+   (let [tcoll (transient [])]
+     (doseq [path paths]
+       (when (directory? path)
+         (transduce-file-tree-1
+           (comp
+             xform
+             (map
+               (fn [[^Path path' ^BasicFileAttributes attrs]]
+                 {:op   :copy
+                  :src  path'
+                  :path (.relativize (as-path path) path')
+                  :time (. attrs lastModifiedTime)})))
+           (fn
+             ([_])
+             ([tcoll op] (conj! tcoll op)))
+           tcoll
+           path)))
+     (persistent! tcoll))))
 
 
 ;; * filename utils internal
