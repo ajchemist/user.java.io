@@ -115,13 +115,13 @@
     (throw (IllegalArgumentException. (str "Illegal copy option: " opt)))))
 
 
-(defn- ^"[Ljava.nio.file.OpenOption;"
+(defn ^"[Ljava.nio.file.OpenOption;"
   interpret-open-opts
   [opts]
   (into-array OpenOption (map interpret-open-opt opts)))
 
 
-(defn- ^"[Ljava.nio.file.CopyOption;"
+(defn ^"[Ljava.nio.file.CopyOption;"
   interpret-copy-opts
   [opts]
   (into-array CopyOption (map interpret-copy-opt opts)))
