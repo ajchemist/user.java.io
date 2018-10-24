@@ -9,6 +9,7 @@
    java.io.OutputStream
    java.net.URI
    java.net.URL
+   java.nio.charset.Charset
    java.nio.file.CopyOption
    java.nio.file.FileSystem
    java.nio.file.FileSystems
@@ -443,7 +444,23 @@
 
   jio/Coercions
   (as-file [x] (. x toFile))
-  (as-url [x] (.. x toUri toURL)))
+  (as-url [x] (.. x toUri toURL))
+
+  jio/IOFactory
+  (make-input-stream [x opts] (jio/make-input-stream (Files/newInputStream x (make-array OpenOption 0)) opts))
+  (make-output-stream [x opts] (jio/make-output-stream (Files/newOutputStream x (make-array OpenOption 0)) opts))
+  (make-reader [x opts]
+    (jio/make-reader
+      (if-let [encoding (:encoding opts)]
+        (Files/newBufferedReader x (Charset/forName encoding))
+        (Files/newBufferedReader x))
+      opts))
+  (make-writer [x opts]
+    (jio/make-writer
+      (if-let [encoding (:encoding opts)]
+        (Files/newBufferedWriter x (Charset/forName encoding) (make-array OpenOption 0))
+        (Files/newBufferedWriter x (make-array OpenOption 0)))
+      opts)))
 
 
 (extend-type FileSystem
