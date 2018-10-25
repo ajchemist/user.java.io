@@ -258,25 +258,25 @@
 
 
 (defn- do-copy-operation
-  [^Path dest-dir {:keys [src path] :as operation}]
+  [^Path dest-path {:keys [src path] :as operation}]
   (copy!
     (input-stream-or-as-path src)
-    (doto (path-resolve dest-dir path) (mkparents))
+    (doto (path-resolve dest-path path) (mkparents))
     (select-keys operation [:time :mode])))
 
 
 (defn- do-write-operation
-  [^Path dest-dir {:keys [path write-fn] :as operation}]
-  (write! (doto (path-resolve dest-dir path) (mkparents)) write-fn))
+  [^Path dest-path {:keys [path write-fn] :as operation}]
+  (write! (doto (path-resolve dest-path path) (mkparents)) write-fn))
 
 
 (defn do-operations
-  [^Path dest-dir operations]
+  [^Path dest-path operations]
   (doseq [operation operations]
     (try
       (case (:op operation)
-        (:copy :copy!)   (do-copy-operation dest-dir operation)
-        (:write :write!) (do-write-operation dest-dir operation)
+        (:copy :copy!)   (do-copy-operation dest-path operation)
+        (:write :write!) (do-write-operation dest-path operation)
         (throw (UnsupportedOperationException. (pr-str operation))))
       (catch Throwable e
         (throw (ex-info "Operation failed:" {:operation operation :exception e}))))))
