@@ -4,15 +4,13 @@
    [clojure.tools.deps.alpha :as deps]
    [clojure.tools.deps.alpha.reader :as deps.reader]
    [clojure.tools.deps.alpha.extensions :as deps.ext]
-   [clojure.tools.deps.alpha.util.maven :as maven]
    [clojure.tools.deps.alpha.extensions.git :as deps.git]
-   [badigeon.maven.alpha :as badigeon.maven]
-   [badigeon.clean :as clean]
-   [badigeon.javac :as javac]
-   [badigeon.jar.maven.alpha :as jar]
-   [badigeon.install :as install]
-   [badigeon.sign :as sign]
-   [badigeon.deploy :as deploy]
+   [clojure.tools.namespace.find :as ns.find]
+   [user.tools.deps.maven.alpha :as maven]
+   [user.tools.deps.clean :as clean]
+   [user.tools.deps.compile :as compile]
+   [user.tools.deps.jar :as jar]
+   [user.tools.deps.install :as install]
    [script.time]
    [user.java.io.alpha :as io]
    )
@@ -33,11 +31,14 @@
   (time
     (do
       (clean/clean target-path)
+      (compile/compile (ns.find/find-namespaces (map jio/file ["src"])))
       (let [lib        'user.java.io
             version    (script.time/chrono-version-str)
             mvn-coords {:mvn/version version}
-            pom-file   (badigeon.maven/sync-pom lib mvn-coords)
-            jarpath    (jar/jar lib mvn-coords nil {:out-path (. target-path resolve "package.jar")})]
+            pom-file   (maven/sync-pom lib mvn-coords)
+            jarpath    (jar/jar lib mvn-coords nil
+                                {:out-path     (. target-path resolve "package.jar")
+                                 :compile-path classes-path})]
         #_(println (str (install/install lib mvn-coords jarpath pom-file)))
         (println (str "\n- " version "\n"))
         jarpath))))

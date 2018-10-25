@@ -5,10 +5,11 @@
   {:extra-paths ["test"]
    :extra-deps
    {
-    badigeon/badigeon            {:git/url "https://github.com/aJchemist/badigeon.git" :sha "0d3df0284548310e77b75c8672666cac4cb902e9"}
     com.cognitect/test-runner    {:git/url "https://github.com/cognitect-labs/test-runner.git" :sha "028a6d41ac9ac5d5c405dfc38e4da6b4cc1255d5"}
     org.apache.maven/maven-model {:mvn/version "3.5.4"}
     org.clojure/tools.cli        {:mvn/version "0.4.1"}
+    org.clojure/tools.deps.alpha {:mvn/version "0.5.460"}
+    user.tools.deps.alpha        {:git/url "https://github.com/aJchemist/user.tools.deps.alpha.git" :sha "b513a09711e8131e47dd60b47807d6ea31844ac4"}
     }}
 
 
