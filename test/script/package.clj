@@ -31,7 +31,7 @@
   (time
     (do
       (clean/clean target-path)
-      (compile/compile (ns.find/find-namespaces (map jio/file ["src"])))
+      (compile/compile (ns.find/find-namespaces (map jio/file ["src"])) nil nil {:direct-linking true})
       (let [lib        'user.java.io
             version    (script.time/chrono-version-str)
             mvn-coords {:mvn/version version}
