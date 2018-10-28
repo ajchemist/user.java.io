@@ -32,17 +32,13 @@
     (do
       (clean/clean target-path)
       ;; (compile/compile (ns.find/find-namespaces (map jio/file ["src"])) nil nil {:direct-linking true})
-      (let [lib        'user.java.io
-            version    (script.time/chrono-version-str)
-            mvn-coords {:mvn/version version}
-            pom-file   (maven/sync-pom lib mvn-coords)
-            jarpath    (jar/jar lib mvn-coords nil
-                                {:out-path     (. target-path resolve "package.jar")
-                                 ;; :compile-path classes-path
-                                 })]
-        #_(println (str (install/install lib mvn-coords jarpath pom-file)))
-        (println (str "\n- " version "\n"))
-        jarpath))))
+      (let [pom-path (maven/sync-pom 'user.java.io {:mvn/version (script.time/chrono-version-str)})
+            jarpath  (jar/jar nil nil nil
+                              {:pom-path pom-path
+                               :out-path (. target-path resolve "package.jar")
+                               ;; :compile-path classes-path
+                               })]
+        (println (str (install/install nil nil jarpath pom-path)))))))
 
 
 (defn -main
@@ -55,3 +51,8 @@
 
 
 (set! *warn-on-reflection* false)
+
+
+(comment
+  (package)
+  )
