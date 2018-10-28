@@ -13,7 +13,7 @@
 
     ;; user.tools.deps.alpha maven jar depend user.java.io artifact which is aot-compiled.
     ;; so avoid maven procurer.
-    user.tools.deps.alpha {:git/url "https://github.com/aJchemist/user.tools.deps.alpha.git" :sha "b513a09711e8131e47dd60b47807d6ea31844ac4"}
+    user.tools.deps.alpha {:git/url "https://github.com/aJchemist/user.tools.deps.alpha.git" :sha "dbfdf4e4913cda3bd5591d610be83f9b0cd1d265"}
     }}
 
 
