@@ -272,14 +272,17 @@
 
 (defn do-operations
   [^Path dest-path operations]
-  (doseq [operation operations]
-    (try
-      (case (:op operation)
-        (:copy :copy!)   (do-copy-operation dest-path operation)
-        (:write :write!) (do-write-operation dest-path operation)
-        (throw (UnsupportedOperationException. (pr-str operation))))
-      (catch Throwable e
-        (throw (ex-info "Operation failed:" {:operation operation :exception e}))))))
+  (run!
+    (fn
+      [operation]
+      (try
+        (case (:op operation)
+          (:copy :copy!)   (do-copy-operation dest-path operation)
+          (:write :write!) (do-write-operation dest-path operation)
+          (throw (UnsupportedOperationException. (pr-str operation))))
+        (catch Throwable e
+          (throw (ex-info "Operation failed:" {:operation operation :exception e})))))
+    operations))
 
 
 ;; * file tree
