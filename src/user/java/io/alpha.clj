@@ -149,6 +149,36 @@
   (Files/isDirectory (as-path x) *no-follow*))
 
 
+(defn executable?
+  ^Boolean
+  [x]
+  (Files/isExecutable (as-path x)))
+
+
+(defn hidden?
+  ^Boolean
+  [x]
+  (Files/isHidden (as-path x)))
+
+
+(defn readable?
+  ^Boolean
+  [x]
+  (Files/isReadable (as-path x)))
+
+
+(defn writable?
+  ^Boolean
+  [x]
+  (Files/isWritable (as-path x)))
+
+
+(defn symlink?
+  ^Boolean
+  [x]
+  (Files/isSymbolicLink (as-path x)))
+
+
 (defn same-directory?
   ^Boolean
   [path1 path2]
