@@ -5,16 +5,22 @@
   {:extra-paths ["test"]
    :extra-deps
    {
-    com.cognitect/test-runner    {:git/url "https://github.com/cognitect-labs/test-runner.git" :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}
-    org.apache.maven/maven-model {:mvn/version "3.5.4"}
-    org.clojure/tools.cli        {:mvn/version "0.4.1"}
-    org.clojure/tools.deps.alpha {:mvn/version "0.6.488"}
+    org.clojure/tools.cli        {:mvn/version "1.0.194"}
+    org.clojure/tools.deps.alpha {:mvn/version "0.8.677"}
 
 
+    user.java.time        {:git/url "https://github.com/aJchemist/user.java.time.git" :sha "68aaf15bbef09c96dc2cb02d9e2f2a7d9e7cfd30"}
     ;; user.tools.deps.alpha maven jar depends user.java.io artifact which is aot-compiled.
     ;; so avoid maven procurer.
-    user.tools.deps.alpha {:git/url "https://github.com/aJchemist/user.tools.deps.alpha.git" :sha "bfe078f27e1e0fac3e9a45787e46a3773ca1e214"}
+    user.tools.deps.alpha {:git/url "https://github.com/aJchemist/user.tools.deps.alpha.git" :sha "14d099e738cda8d59e99ab8fbaf31834c29bc072"}
     }}
+
+
+  :test-runner
+  {:extra-deps {com.cognitect/test-runner
+                {:git/url "https://github.com/cognitect-labs/test-runner"
+                 :sha     "f7ef16dc3b8332b0d77bc0274578ad5270fbfedd"}}
+   :main-opts  ["-m" "cognitect.test-runner" "-d" "src/test"]}
 
 
   :1.8
@@ -34,5 +40,5 @@
   :1.10
   {:extra-deps
    {
-    org.clojure/clojure {:mvn/version "1.10.0"}
+    org.clojure/clojure {:mvn/version "1.10.1"}
     }}}}

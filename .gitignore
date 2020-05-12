@@ -1,2 +1,4 @@
 /.cpcache
 /target
+.ci/deploy-key
+.ci/deploy-key.pub
