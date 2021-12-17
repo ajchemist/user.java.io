@@ -66,7 +66,7 @@
 ;;
 
 
-(defn path ^Path [x] (as-path x))
+(defn ^:deprecated path ^Path [x] (as-path x))
 
 
 ;; ** resolution
@@ -201,6 +201,16 @@
   ^Path
   [dirpath]
   (Files/createDirectories (as-path dirpath) (make-array FileAttribute 0)))
+
+
+(defn symlink
+  "Return target with type of Path."
+  ^Path
+  [source target]
+  (Files/createSymbolicLink
+    (as-path target)
+    (as-path source)
+    (make-array FileAttribute 0)))
 
 
 (defn mkparents
