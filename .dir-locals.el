@@ -1,2 +1,3 @@
-((nil
-  (cider-clojure-cli-global-options . "-R:1.10 -A:test")))
+((clojure-mode
+  (cider-clojure-cli-aliases . "test")
+  (clojure-local-source-test-path . "test")))
