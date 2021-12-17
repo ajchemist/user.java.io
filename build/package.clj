@@ -30,10 +30,10 @@
                     :version   version
                     :basis     basis
                     :scm       {:url (or scm-url github-scm-url "")}
-                    :src-dirs  ["src/core"]})
+                    :src-dirs  ["src"]})
   (build/copy-file {:src    (build/pom-path {:class-dir class-dir :lib lib})
                     :target "pom.xml"})
-  (build/copy-dir {:src-dirs   ["src/core"]
+  (build/copy-dir {:src-dirs   ["src"]
                    :target-dir class-dir})
   (build/jar {:class-dir class-dir
               :jar-file  "target/package.jar"}))
