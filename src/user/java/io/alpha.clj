@@ -34,8 +34,9 @@
 ;; * protocol
 
 
-(defprotocol IPath
-  (^java.nio.file.Path as-path [x]))
+(defprotocol Coercion
+  (^java.nio.file.Path as-path [x])
+  (^java.net.URI as-uri [x]))
 
 
 (defprotocol FilenameUtils
@@ -47,7 +48,7 @@
   (^String extension [this]))
 
 
-(defprotocol UriUtils
+(defprotocol ^:deprecated UriUtils
   (^java.net.URI to-uri [x]))
 
 
@@ -469,7 +470,7 @@
 
 
 (extend-type Path
-  IPath
+  Coercion
   (as-path [x] x)
 
   jio/Coercions
@@ -494,12 +495,12 @@
 
 
 (extend-type FileSystem
-  IPath
+  Coercion
   (as-path [x] (first (.getRootDirectories x))))
 
 
 (extend-type String
-  IPath
+  Coercion
   (as-path [x] (Paths/get x (make-array String 0)))
 
   FilenameUtils
@@ -512,8 +513,9 @@
 
 
 (extend java.io.File
-  IPath
-  {:as-path (fn [^File x] (.toPath x))}
+  Coercion
+  {:as-path (fn [^File x] (.toPath x))
+   :as-uri (fn [^File x] (. x toURI))}
 
   FilenameUtils
   {:filename    (fn [^File x] (.getName x))
@@ -531,8 +533,9 @@
 
 
 (extend-type java.net.URI
-  IPath
+  Coercion
   (as-path [x] (Paths/get x))
+  (as-uri [x] x)
 
   UriUtils
   (to-uri [x] x)
@@ -542,6 +545,9 @@
 
 
 (extend-type java.net.URL
+  Coercion
+  (as-uri [this] (. this toURI))
+
   FilenameUtils
   (filename [this] (url-filename this))
   (filepath [this] (. this getPath))
