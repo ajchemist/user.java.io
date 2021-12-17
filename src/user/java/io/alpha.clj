@@ -7,12 +7,10 @@
    java.io.File
    java.io.InputStream
    java.io.OutputStream
-   java.net.URI
    java.net.URL
    java.nio.charset.Charset
    java.nio.file.CopyOption
    java.nio.file.FileSystem
-   java.nio.file.FileSystems
    java.nio.file.FileVisitOption
    java.nio.file.FileVisitResult
    java.nio.file.FileVisitor
@@ -21,14 +19,11 @@
    java.nio.file.OpenOption
    java.nio.file.Path
    java.nio.file.Paths
-   java.nio.file.SimpleFileVisitor
    java.nio.file.StandardCopyOption
    java.nio.file.StandardOpenOption
    java.nio.file.attribute.BasicFileAttributes
    java.nio.file.attribute.FileAttribute
    java.nio.file.attribute.FileTime
-   java.nio.file.attribute.PosixFilePermission
-   java.nio.file.attribute.PosixFilePermissions
    java.util.EnumSet
    ))
 
@@ -296,7 +291,7 @@
 
 
 (defn- do-write-operation
-  [^Path dest-path {:keys [path write-fn] :as operation}]
+  [^Path dest-path {:keys [path write-fn] :as _operation}]
   (write! (doto (path-resolve dest-path path) (mkparents)) write-fn))
 
 
@@ -326,7 +321,7 @@
   [dirpath re]
   (->> dirpath
     jio/file .listFiles seq
-    (filter #(re-matches re (memfn ^File getName)))))
+    (filter #(re-matches re ((memfn ^File getName) %)))))
 
 
 (defn dirwalk
@@ -334,7 +329,7 @@
   [dirpath re]
   (->> dirpath
     jio/file file-seq
-    (filter #(re-matches re (memfn ^File getName)))))
+    (filter #(re-matches re ((memfn ^File getName) %)))))
 
 
 ;; ** file visitor
@@ -342,20 +337,20 @@
 
 (defrecord visitFileType [^Path path ^BasicFileAttributes attrs]
   clojure.lang.Indexed
-  (nth [this i] (case i 0 path 1 attrs (throw (IndexOutOfBoundsException.))))
-  (nth [this i not-found] (case i 0 path 1 attrs not-found))
+  (nth [_this i] (case i 0 path 1 attrs (throw (IndexOutOfBoundsException.))))
+  (nth [_this i not-found] (case i 0 path 1 attrs not-found))
   )
 
 
 (defn make-file-visitor
   [visit-file]
   (reify FileVisitor
-    (postVisitDirectory [_ dir exception] (when exception (.printStackTrace exception)) FileVisitResult/CONTINUE)
-    (preVisitDirectory [_ dir attrs] FileVisitResult/CONTINUE)
+    (postVisitDirectory [_ _dir exception] (when exception (.printStackTrace exception)) FileVisitResult/CONTINUE)
+    (preVisitDirectory [_ _dir _attrs] FileVisitResult/CONTINUE)
     (visitFile [_ path attrs]
       (visit-file (->visitFileType path attrs))
       FileVisitResult/CONTINUE)
-    (visitFileFailed [_ file exception]
+    (visitFileFailed [_ _file exception]
       (case (.getName ^Class exception)
         "java.nio.file.FileSystemLoopException" FileVisitResult/SKIP_SUBTREE
         "java.nio.file.NoSuchFileException"     FileVisitResult/SKIP_SUBTREE
