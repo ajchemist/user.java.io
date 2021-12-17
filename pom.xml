@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.ajchemist</groupId>
   <artifactId>user.java.io</artifactId>
-  <version>2021.351.7781</version>
+  <version>2021.351.9469</version>
   <scm>
     <url>https://github.com/ajchemist/user.java.io</url>
   </scm>
@@ -14,7 +14,7 @@
     </repository>
   </repositories>
   <build>
-    <sourceDirectory>src/core</sourceDirectory>
+    <sourceDirectory>src</sourceDirectory>
   </build>
   <dependencies>
     <dependency>
