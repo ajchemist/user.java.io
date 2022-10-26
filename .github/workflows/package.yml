@@ -9,10 +9,10 @@ on:
       - ".github/workflows/package.yml"
       - "deps.edn"
       - 'build/package.clj'
-      - "src/core/**/*.clj"
-      - "src/core/**/*.cljc"
-      - "src/test/**/*.clj"
-      - "src/test/**/*.cljc"
+      - "src/**/*.clj"
+      - "src/**/*.cljc"
+      - "test/**/*.clj"
+      - "test/**/*.cljc"
     branches:
       - master
   pull_request:

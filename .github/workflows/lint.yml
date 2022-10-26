@@ -8,9 +8,9 @@ on:
     paths:
       - '.github/workflows/lint.yml'
       - '.clj-kondo/config.edn'
-      - 'src/core/**/*.clj'
-      - 'src/core/**/*.cljs'
-      - 'src/core/**/*.cljc'
+      - 'src/**/*.clj'
+      - 'src/**/*.cljs'
+      - 'src/**/*.cljc'
     branches:
       - master
   pull_request:

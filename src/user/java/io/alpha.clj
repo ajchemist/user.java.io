@@ -81,7 +81,7 @@
 (defn relativize
   ^Path
   [a b]
-  (relativize (as-path a) (as-path b)))
+  (.relativize (as-path a) (as-path b)))
 
 
 ;; ** options
