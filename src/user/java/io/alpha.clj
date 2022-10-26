@@ -77,6 +77,12 @@
   (. a resolve (str b)))
 
 
+(defn relativize
+  ^Path
+  [a b]
+  (relativize (as-path a) (as-path b)))
+
+
 ;; ** options
 
 
@@ -410,7 +416,7 @@
                  (fn [[^Path path' ^BasicFileAttributes attrs]]
                    {:op   :copy
                     :src  path'
-                    :path (.relativize (as-path path) path')
+                    :path (relativize path path')
                     :time (. attrs lastModifiedTime)})))
              (fn
                ([_])
