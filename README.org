@@ -1,5 +1,0 @@
-#+TITLE: user.java.io
-
-
-[[https://clojars.org/user.java.io][https://img.shields.io/clojars/v/user.java.io.svg?style=flat-square]]
-[[https://travis-ci.org/aJchemist/user.java.io][https://img.shields.io/travis/aJchemist/user.java.io/master.svg?style=flat-square]]
