@@ -24,6 +24,7 @@
    java.nio.file.attribute.BasicFileAttributes
    java.nio.file.attribute.FileAttribute
    java.nio.file.attribute.FileTime
+   java.util.EnumSet
    ))
 
 
@@ -465,18 +466,21 @@
 ;; ** url
 
 
-(defn ^String url-filename
+(defn url-filename
+  ^String
   [^URL url]
   (let [path (. url getPath)]
     (subs path (unchecked-inc (. path lastIndexOf "/")))))
 
 
-(defn ^String url-basename
+(defn url-basename
+  ^String
   [^URL url]
   (get-basename (url-filename url)))
 
 
-(defn ^String url-extension
+(defn url-extension
+  ^String
   [^URL url]
   (get-extension (url-filename url)))
 

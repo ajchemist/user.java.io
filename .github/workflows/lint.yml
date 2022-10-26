@@ -2,6 +2,8 @@ name: Lint
 
 
 on:
+  workflow_dispatch:
+    inputs:
   push:
     paths:
       - '.github/workflows/lint.yml'
@@ -39,7 +41,7 @@ jobs:
           version: ${{ env.clj-kondo-version }}
       - name: Lint
         run: |
-          clj-kondo --lint src/core
+          clj-kondo --lint src
           # --config .clj-kondo/config.edn
       - name: Discord action job digest notification
         uses: sarisia/actions-status-discord@v1
