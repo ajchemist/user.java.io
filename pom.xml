@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.ajchemist</groupId>
   <artifactId>user.java.io</artifactId>
-  <version>2022.299.10577</version>
+  <version>2023.34.46621</version>
   <scm>
     <url>https://github.com/ajchemist/user.java.io</url>
   </scm>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
-      <version>1.10.3</version>
+      <version>1.11.1</version>
     </dependency>
   </dependencies>
   <name>user.java.io</name>
