@@ -8,22 +8,22 @@
   {:extra-paths ["test"]
    :extra-deps
    {
-    io.github.clojure/tools.build {:git/tag "v0.7.2" :git/sha "0361dde"}
-    org.clojure/tools.cli         {:mvn/version "1.0.206"}
+    org.clojure/tools.cli         {:mvn/version "1.0.214"}
     }}
 
 
   :test-runner
-  {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.0" :git/sha "b3fd0d2"}}
+  {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
    :main-opts  ["-m" "cognitect.test-runner" "-d" "test"]
    :exec-fn    cognitect.test-runner.api/test
-   :exec-args  ["test"]}
+   :exec-args  {:dirs     ["test"]
+                :excludes [:deprecated]}}
 
 
   :build
   {:deps
    {
-    io.github.clojure/tools.build {:git/tag "v0.7.2" :git/sha "0361dde"}
+    io.github.clojure/tools.build {:git/tag "v0.9.3" :git/sha "e537cd1"}
     user.java.time/user.java.time {:mvn/version "2020.267.10158"}
     }
    :ns-default build.package}
@@ -32,24 +32,4 @@
   :maven-tool
   {:extra-deps {io.github.ajchemist/user.apache.maven.alpha {:git/sha "4f70a7a6ed4ab0620c7a0a3a4caf95d33ef916c6"}}
    :ns-default user.apache.maven.api}
-
-
-  :1.8
-  {:extra-deps
-   {
-    org.clojure/clojure {:mvn/version "1.8.0"}
-    }}
-
-
-  :1.9
-  {:extra-deps
-   {
-    org.clojure/clojure {:mvn/version "1.9.0"}
-    }}
-
-
-  :1.10
-  {:extra-deps
-   {
-    org.clojure/clojure {:mvn/version "1.10.3"}
-    }}}}
+  }}

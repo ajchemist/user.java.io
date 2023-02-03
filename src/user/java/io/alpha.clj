@@ -60,6 +60,22 @@
   {:to-external-form (fn [x] (to-external-form (jio/as-url x)))})
 
 
+;; * fundamental
+
+
+(defn file-or-resource
+  "(jio/file `root-dir` `path`) exists then return jio/file, otherwise
+  lookup (jio/resource `path`) and return"
+  [root-dir path]
+  (let [root (jio/as-file root-dir)]
+    (if (and root (.isDirectory root))
+      (let [file (jio/file root path)]
+        (cond
+          (.isFile file) file
+          :else          (jio/resource path)))
+      (jio/resource path))))
+
+
 ;; * nio.files
 
 
@@ -76,12 +92,6 @@
   ^Path
   [^Path a b]
   (. a resolve (str b)))
-
-
-(defn relativize
-  ^Path
-  [a b]
-  (.relativize (as-path a) (as-path b)))
 
 
 ;; ** options
@@ -417,7 +427,7 @@
                  (fn [[^Path path' ^BasicFileAttributes attrs]]
                    {:op   :copy
                     :src  path'
-                    :path (relativize path path')
+                    :path (.relativize (as-path path) path')
                     :time (. attrs lastModifiedTime)})))
              (fn
                ([_])

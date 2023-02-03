@@ -3,7 +3,6 @@
    [clojure.test :as test :refer [deftest is are testing]]
    [clojure.string :as str]
    [clojure.java.io :as jio]
-   [clojure.tools.deps.alpha :as deps]
    [user.java.io.alpha :refer :all]
    )
   (:import
@@ -47,17 +46,7 @@
       (mkjarfs jarpath {:create true}))))
 
 
-(defn get-jarpath
-  ^String
-  [lib coord]
-  (let [path (get-in (deps/resolve-deps {:deps {lib coord}} {}) [lib :paths 0])]
-    (when (str/ends-with? path ".jar")
-      path)))
-
-
 (deftest main
-
-
   (let [dest-dir (mktempdir "test")]
     (do-operations
       dest-dir
@@ -73,6 +62,12 @@
 
 
 (comment
+  (defn get-jarpath
+    ^String
+    [lib coord]
+    (let [path (get-in (deps/resolve-deps {:deps {lib coord}} {}) [lib :paths 0])]
+      (when (str/ends-with? path ".jar")
+        path)))
 
 
   (paths-copy-operations ["src" "test"])
